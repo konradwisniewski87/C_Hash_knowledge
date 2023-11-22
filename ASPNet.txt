@@ -1,0 +1,119 @@
+ASP.Net
+
+
+HTTP - Hyper Text Transfer Protocol, port 80 a szyfrowana 443, wykożystywany przez przeglądarki, wymaga protokołu(https://), ścieśki(youtube.com), ścieżka(results?), parametry zapytania(serch_query=webapi)
+
+
+Metody:
+get		- Pobieranie zasobów z serwera
+post	- tworzenie nowych zasobów
+put		- aktualizacja istniejącego zasobu
+patch	- częściawa aktualizacja zasobu
+delete	- usuwanie zasobu
+
+
+Rest api - standard komunikacji serwera z clienterm www
+Delete /restaurant/klucz
+Get /restaurant/klucz
+Get /restaurant/     -> pobierze wszystkie restauracje
+
+zapytania:
+Get /restaurant?city=Warszawa
+Get /restaurant?sortBy=Name
+
+
+Pliki w netCore
+property->launchSettings.json profile uruchamiania jak debug, port
+	launchBrowser czy przeglądarka ma być uruchamiana po uruchomieniu projektu, jak kożystam z Postamana to wyłączam
+
+Controllers - kontrolery adresu url, konkretna klasa która na podstawie rutingu będzie odbierała zaputania naszego api
+
+[HttpGet] odbiera polecenia get
+
+appsetting.json zawiera niezbędne do konfiguracji naszej aplikacji które są defoltowe
+appsettingsxxxx.json
+gdzie xxxxx to nazwa środowiska
+np appsettingsDevelopnemt.json
+appsettingsDebug.json
+a to z którego kożystamy ustawiane jest w launchSettings
+wartości zmienione w appsettingsxxx.json nadpisują te z appsettins.json
+
+konfiguracji serwisu dokonuje się w Startup ConfigureServices, możliwiści:
+service.AddSingleton<>() - obiekt będzie utworzony raz podczas trwania aplikacji, od uruchomienia do zamknięcia
+
+service.AddScope<>() - każdy obiekt będzie utworzony na nowo przy nowym zapytaniu klienta, na jedno zypytanie będzie jedna instancja serwisu.
+
+service.AddTransient<>() - rejestuje serwisy za każdym razem kiedy odwołujemy się do nich przez konstruktor, jeśli będziemy kożystać w czsie jednego zapytanie z kulku miejsc to za każdym razem będziemy tworzyć obiekt
+
+robumy to tak:
+service.AddTransient<IWeatherForecastService, WeatherForecastService>() - najpierw podajemy interfejs, a potem konkretną implementację
+
+Postman:
+Jest w pełni darmowy
+Pozwala wysyłać zapytania http.
+Możemy ustawić parametry zapytania w params, nagłówki w headers,
+w body mamy odpowiedzi, status zapytania, czas odpowiedzi, rozmiar odpowiedzi.
+
+aby okienka pytania i odpowiedzi były obok siebie a nie pod sobą w Settings zmieniamy checkbox Two-pane view na ON
+
+Controllery - jeśli jest [Route("[controller]")] i pod nim np public class WeatherRorecastController to jest to domyślny kontroler dle zapytania na WeatherForecast, do niego jest mapowane
+
+jeśli będą dwie metody [HttpGet] nie różniące się parametrami, program nie skompiluje się(dla tego samego endPointów), chyba że zmienimy dla niej ścieżkę [HttpGet] [Route("currentDay")]  ale wtedy ścieżka to weatherforecast/currentDay
+
+Zamiast 
+[HttpGet]
+[Route("currentDay")]
+można napisać
+[HttpGet("currentDay")]
+
+Parametry zapytania można przesyłać
+[HttpGet("currentDay")]
+public IEnumerable<WeatherForecastService> Get2([FromQuery]int take, [FromRoute] int max)
+{
+	var result = -service.Get();
+	return result;
+}
+ale trzeba wskazać skąd on pochodzi, z adresu zapytania, prarametru zapytania, ciała zapytania:
+FromBody
+FromForm
+FromHeader
+FromQuery - z ciała zapytania
+FromRoute - prze ścieżkę
+FromService
+
+jeśli przekazujemy przez ścieżkę [FromRoute] to musimy ją odpowiednio zmapować tu:
+[HttpGet("currentDay/{max}")] żeby model builder wiedział o co chodzi
+aby takie zapytanie przesłać z Postmana, należy w Params dodać KEY = take i value np 50
+max uzupełniamy po ścieżce wpisując np 123, co w rezultacie da nam 
+weatherforecast/currentday/123?take=50
+
+akcja to publiczna metoda w kontrolerze
+[HttpPost]
+public string Hello([FromBody] string name)
+{
+	return $"Hello {name}";
+}
+w Postmanie zmieniamy typ zapytania na POST, w zakładce Body ustawiamy raw i JSON i wpisujemy "Konrad"
+
+Zmiana typu rezultatu dla akcji:
+	[HttpPost]
+	public ActionResult<string> Hello([FromBody] string name)
+	{
+		HttpContext.Response.StatusCode = 401; //przez HttpContext.Response zawsze mamy dostęp do zapytania jak i odpowiedzi
+		return $"Hello {name}";
+	}
+albo:
+	[HttpPost]
+	public ActionResult<string> Hello([FromBody] string name)
+	{
+		return StatusCode(401, $"Hello {name}");
+	}
+albo:
+	[HttpPost]
+	public ActionResult<string> Hello([FromBody] string name)
+	{
+		return NotFound($"Hello {name}"); //wyśle status 404
+	}
+
+
+Entity Framework

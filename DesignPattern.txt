@@ -1,0 +1,12 @@
+Wzorce projektowe
+
+
+//----------------------------  Struturalny
+
+Dekorator- Struturalny wzorzec projektowy, którego celem jest umożliwienie rozszerzenia zachowania istniejącychh obiektów, poprzez opakowanie ich w specjalnych obiektach, króre będą zawierały dane zachowanie.
+
+
+
+//----------------------------  Bechawioralny
+
+łańcuch zobowiązań -  zastępuje if()else()Bechawioralny wzorzec projektowy, który pozwala przekazywać żądania wzdłuż łańcucha obiektów obsłógujących dane żądanie

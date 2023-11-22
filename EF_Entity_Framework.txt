@@ -1,0 +1,117 @@
+Tworzenie kluczy głównego 
+ID
+nazwaklasyId
+Moną też użyć zamiast int użyć GUID
+A jeśli na kolumnie o dowolnej nazwie to tworzymy 
+[Key]
+NazwaParametru
+
+Domyślni nazwa tabeli to nazwa właściwości/zmiennej, typ zmienne c# zamienią na typy sql, ale steingi są bardzo duże, więc możemy to nadpisać aby string był np 20 znakowy 
+
+
+Jeżeli nullabe jest włączone to domyślnie EF wstawia null, jeśli nie wstawiamy standardowo string?
+
+Jeśli domyślnie jest null a nie chcemy tego to w klasie dziedziczącej po dbContext 
+w OnModelCreating, dla danego dbSetu ustawiamy nazwę.IsReqiured 
+
+Generalnie zmiany takie jak dokładność zmiennych, nazwa tabeli czy, typ zmiennej, można ogarnąć na 2 sposoby.
+W klanie z właściwościami przez:
+[Column(TypeName = "varchar(200)")] = zamiast dla strungu vchar max to zmieniamy na vchar 200
+[Column("Iteration_Patch")] = nazwa tabeli inna niź nazwa zmiennej
+[MaxLength(200)] = maksymalna długość stringa
+[Column(TypeName = "deximal(5,2)")] = precycja dla decimal
+
+klucz można stworzyć na podstawie dwóch kolumn w klasie dziedziczącej po dbContext w OnModelCreating np:
+protected override void OnModelCreating(ModelBuilder modelBuilder) {
+	modelBuilder.Entity<User>()
+		.HasKey(x => new { x.Email, x.LastName });
+}
+
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+	modelBuilder.Entity<WorkItem>()
+		.Property(x=>x.State)
+		.IsRequired();
+
+	modelBulder.Entity<WorkItem>()
+		.Property(x=>x.Area)
+		.HasColumnType("varchar(200)");
+
+	modelBilder.Entity<WorkItem>(eb=>
+	{
+		eb.Property(wi => wi.IterationPath).HasColumnName("Iteration_Path");
+		eb.Property(wi => wi.Efford).HasColumnName("decimal(5,2)");
+		eb.Property(wi => wi.EndDate).HasPrecision(3);
+		eb.Property(wi => wi.Activity).HasMaxLength(200);
+		eb.Property(wi => wi.RemaningWork).HasPrecision(14,2);
+	});
+}
+
+Można to zamienić na :
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+	modelBilder.Entity<WorkItem>(eb=>
+	{
+		eb.Property(x => x.State).IsRequired();
+		eb.Property(x => x.Area).HasColumnType("varchar(200)");
+		eb.Property(wi => wi.IterationPath).HasColumnName("Iteration_Path");
+		eb.Property(wi => wi.Efford).HasColumnName("decimal(5,2)");
+		eb.Property(wi => wi.EndDate).HasPrecision(3);
+		eb.Property(wi => wi.Activity).HasMaxLength(200);
+		eb.Property(wi => wi.RemaningWork).HasPrecision(14,2);
+	});
+}
+
+Wartości generowane domyślnie:
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+	modelBilder.Entity<WorkItem>(eb=>
+	{
+		eb.Property(x => x.State).IsRequired();
+		eb.Property(x => x.Area).HasColumnType("varchar(200)");
+		eb.Property(wi => wi.IterationPath).HasColumnName("Iteration_Path");
+		eb.Property(wi => wi.Efford).HasColumnName("decimal(5,2)");
+		eb.Property(wi => wi.EndDate).HasPrecision(3);
+		eb.Property(wi => wi.Activity).HasMaxLength(200);
+		eb.Property(wi => wi.RemaningWork).HasPrecision(14,2);
+		eb.Property(wi => wi.Priority).HasDefaultValue(1);//wartośc wstawiana przy tworzniu nowej encji
+	});
+
+	model.Builder.Entity<User>(eb=>
+	{
+		eb.Property(x => x.CreatedDate).HasDefaultValueSQL("getutcdate()");
+		eb.Property(x => x.UpdateDate).ValueGeneratedOnUpdate();
+	});
+}
+
+Relacje:
+jeden do jednego:
+urzytkownik ma adres, adres jest przypisany do urzytkownika
+w User dodajemy 
+public Address Address { get; set; }//nazwa oczywiście dowolna liczy się typ zmiennej
+a w adresie
+public User User { get; set; }
+w jednej z tabel należy przechowywać klucz obcy do drugiej z tabel
+public Guid UserId { get; set; }//nazwa musi być nazwą zmiennej z linijki wyżej +Id, zwrócić uwagę czy klucz to int czy Guid, typ ma się zgadzać
+
+dobrze jest dodać informacje że te tabele są w relacji jeden do jednego i ForeignKey
+teoretycznie po property User i UserId sam powinien się kapnąć co jest grane, ale zdarza się że się coś wywali w dużych bazach danych, dodatkowo i tak doda tą kolumną visual studio(jako Shadow Foreign Key Property), a mając nazwaną tą tabelę w klanie łatwiej będzie dodawać referencje i filtrować komentarze, dlatego dodaje tą linijkę HasForeignKey i wkazuje że tabela jest jeden do wielu:
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+	modelBilder.Entity<Address>()
+		.HasOne(u => u.Address)
+		.WithOne(u => a.User)
+		.HasForeignKey<Address>(a=>a.UserId);
+}
+
+jeden do wielu
+wiele do wielu
+
+dziedziczenie po klasach z bazami danych:
+Tabel per type, wydaje się prostsze
+tabel per hierarhie, robi nam dużą bazę danych ze wszystkimi właściwościami
+
+Dziedziczenie per type polega na utworzeniu jednej tabeli, w której przechowywane są wszystkie pola wszystkich typów obiektów w hierarchii dziedziczenia. Każdy typ posiada unikalny identyfikator, który jest przechowywany w kolumnie oznaczonej jako typ (lub podobnej nazwie). Wszystkie typy w hierarchii dziedziczenia mają dostęp do tych samych kolumn, a brakujące pola wypełniane są wartościami null. Zaletą tej metody jest jej prostota i efektywność w przypadku, gdy kolumny różnią się tylko w kilku polach. Wadą jest to, że tabela może stać się bardzo duża i złożona, gdy hierarchia dziedziczenia jest bardzo rozległa i złożona.
+
+Dziedziczenie per hierarchy polega na utworzeniu osobnej tabeli dla każdego typu obiektu w hierarchii dziedziczenia. Tabele te mają wspólną kolumnę z kluczami obcymi, która wskazuje na główną tabelę (tabelę nadrzędną) przechowującą informacje o hierarchii dziedziczenia. Każda tabela zawiera tylko te kolumny, które są specyficzne dla danego typu. Zaletą tej metody jest to, że każda tabela jest relatywnie prosta i łatwa do zrozumienia. Wadą jest to, że podczas wyszukiwania informacji o całej hierarchii dziedziczenia wymagane są zapytania łączące wiele tabel, co może prowadzić do nieco mniejszej wydajności w porównaniu z dziedziczeniem per type.
+

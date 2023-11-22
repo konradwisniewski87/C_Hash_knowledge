@@ -1,0 +1,222 @@
+c# pytania rekrutacujne
+
+Paradygmaty programowania obiektowego:
+Hermetyzacja - tylko same obiekty mogą zmieniać swój stan, property public string Name {get; set;}
+Dziedziczenie - możliwość powstawania wyspecjalizowanych obiektów na podstawie obieków ogólniejszych, można rozszerzać lub zmieniać klasę ogólniejszą
+Polimorfizm - możliwość traktowania różnych obiektów w ten sam sposób{virtual override new}
+Abstrakcja - obiekty są modelami abstakcyjnych bytów. Abstrakcja metody send email
+
+
+SOLID
+Single responsibility Principle
+Open-Close Principle
+Liskov Substitution Principle
+	dla RubberDuck nie dodamy metody fly(), dlatego musi być ona w innym imterface niż  IDuck, tam gdzie klasa pochodna nie jest w stanie reprezentować klasy bazowej naruszamy tą zasadę
+Interface Segregation Principle
+	metodu Iprinter Iscanner Ifax są lepsze od jednego dużego interface
+Dependency Inversion Principle
+	moduły wysokiego poziomu są nieależne od modułów niskiego poziomu
+	powinny zależeć od abstrakcji np interface
+
+
+
+memory leak - program alokuje coraz wiecej pamięci i jej nie zwalnia, najczęstrze przyczyny, jeśli nie czyścimy obiektów które kożystają z pamięci zewnętrznych np bazy danych, pliki.
+
+DRY - don't repeate yourself, reużywalne metody oraz typy generyczne
+Kiss - keep it simple stupid, bez udziwnień idioto, nie komplikuj niczego
+Yagni - you aren't gonna need it - nie robimy niepotrzebnego kodu
+
+JSON a XML - można zapisywać zserializowane obiekty, JSON jest znacznie lżejszym formatem przez co jest preferowany między fron a backend, JSON nie używa tagów i jest domyślnie wspierany przez JavaScript dlatego jest wygodniejszy.
+
+Czym jest serializacja - serializuje się z c# do JSON, konversia obiektu który mamy w pamięci programu na strumień bajtów w celu jego zapisu do bazy danych lub do pliku, paczka Nugatowa NewtonJson
+
+operatory is i as:
+	is - czy konkretny obiekt jest zgodny z danym typem czy nie
+	as - wykonuje konversję z typu na typ, może zwócić null
+
+	is - jest typu bool zwraca true jeśli są tego samego typu
+	as - zwraca obiekt gdy jest on zgodny z danym typem
+	is - niezgodność zwraca false
+	as - niezgodniść zaraca null
+
+        if(kot is Zwierze)
+        {
+            Console.WriteLine ("To kot");
+        }
+        else {
+            Console.WriteLine ("Nie kot");
+        }
+
+        if ((kot as Zwierze) != null)
+        {
+            Console.WriteLine ("To kot");
+        }
+
+[un]boxing 
+boxing - konwertowanie typu wartościowego na typ Object lub dziedziczący po Object
+		zmienna jest opakowywana w system.object i przechowuje na stercie
+unboxing - proces odrotny, 
+		boxing jest niejawny, a unboxing jawny
+		int i = 124;
+		object o = i;
+		i = (int)o;
+
+
+
+
+Jakie midyfikatory występują w C#:
+-Private, jest domyślne, jak nic nie wpiszemy to jest Private
+-Protected Jeżeli dziedziczymy to zachowuje się jak public
+-Internal jest widoczne wewnątrz asembly czyli programu a nie solucji
+-Protected Internal dostępne w asembly i dla class dziedziczących
+-Public
+
+Modyfiktory dostępu jak w c++ plus internal, czyli dostęp w asemply, widać w całym projekcie/programie, ale nie widać w solucji i jescze
+protected internal - dostęp w klasach dziedziczących i w asembly
+
+
+Każdy obiekt w c# dziedziczy po klasie System.Object i udostępnia 4 metody:
+- ToString
+- Equels
+- GetHashCode
+- GetType
+
+w C# możemy dziedziczyć po jednej klasie ale po wielu interfejsach
+
+Verbatim string -> stingi dosłowne np: str2 = @"\\MyServer\TestFolder\NewFolder";
+
+Sterta i stos:
+https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap
+stos jest szybki LIFO
+sterta jest wolniejsza, ale niby jesno i drugie jest w Ram ale kolejka jest szybsza w dodawaniu i alokacji, zwalnianiu
+bo przy zwalnianiu na stosie kożysta się tylko z przeniesienia adresu wskaźnika
+Rozmiar stosu jest ustawiany podczas tworzenia wątku. Rozmiar sterty jest ustawiany podczas uruchamiania aplikacji, ale może rosnąć,
+gdy potrzebne jest miejsce (alokator żąda od systemu operacyjnego większej ilości pamięci).
+
+override i new, przesłąnianie i nadpisywanie metody, (dla new obojętne czy będzie virtualna), przy polimorfiźmie, gdy kożystamy z metody nadpisywanej(new), wykona się
+metoda z klasy bazowej a przy override metoda z klasy dziedziczącej.
+
+ref i out - 
+    ref musi być wcześniej zainicjalizowana, 
+	out nie musi być wcześniej zainicjalizowana ale musi być zainicjalizowana w ciele metody
+
+refleksja - daje nam dostęp do metadanych class i obiektów, 
+Refleksja to mechanizm za pomocą którego mamy dostęp do metadanych klas i obiektów. Możemy dzięki temu przeiterować po wszystkich właściwościach publicznuch danych obiektu, filtrować je i zmieniać w dynamiczny sposób. Kożystają z tego różne biblioteki do mapowania obiektów, serializacji, Entity Framework.
+
+using System;
+
+namespace myproject
+{
+    class Person
+    {
+        public string Name { get; set; } = "Jan_Default_value";
+        public string Surname { get; set; } = "Kowalski"; //jeśli puste zwraca Kowalski
+        public int Age { get; set; } = 17;
+        public Person(string name, string surname, int age)
+        {
+            Name = name;
+            Surname = surname;
+            Age = age;
+        }
+        public Person() { }
+    }
+    class Program
+    {
+        static void Display(object obj)
+        {
+            Type objType = obj.GetType();
+            var properties = objType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var propValue = property.GetValue(obj);
+                var propType = propValue.GetType();
+                if (propType.IsPrimitive || propType == typeof(string))
+                {
+                    Console.WriteLine($"{property.Name} {propValue.ToString()}");
+                }
+            }
+        }
+        static void Main(string[] args)
+        {
+            Console.WriteLine("-------------------------------------------");
+            Person person = new Person();
+            Person person2 = new Person("Konrad", "Wisniewski", 36);
+            Display(person);
+            Console.WriteLine("-------------------------------------------");
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////////
+Typy generyczne(template) - pozwalają na opóźnienie w dostarczeniu specyfikacji typu danych
+w elementach takich jak metody, właściwości lub klasy.
+public class Repositor<T>
+
+np. mamy stronę z restauracjami, każda strona ma nazwę restauracji, opis, kategorię
+od klienta mamy dostać:
+-frazę wyszukiwania,
+-liczę elementów na stronie
+-numer strony
+do klienta zwracamy:
+- razultat
+-zakres(np od 6 do 10 restauracji,)
+-całkowita liczba wierszy czyli ile jest elementów do wyświetlenia
+- całkowita liczba stron
+dla tak wyświetlanej strony robimy typ generyczny dla restauracji, użytkowników...
+
+
+
+Ograniczenia generyczne(generic constraints c#, template w C++) do zastosowanie słowa kluczowego WHERE żeby zawęzić możliwość
+skożystania z typów generycznych np do takich:
+- typów implementujących jakiś interfejs
+- mających jakąś klasę basową
+- mających konstruktor bezparametrowy
+public class Repositor<T> where T : class //jest typem referencyjnym
+public class Repositor<T> where T : IEntity //musi implementować interfejs lub dziedziczyć po jakiejś klasie
+public class Repositor<T> where T : IEntity, IEnumerable //musi dziedziczyć po dwóch interfejsach
+public class Repositor<T> where T : IEntity, new() //musi mieć bezparametrowy konstruktor i dziedziczyć po IEntity
+konstruktor bezparametrowy jest tworzony samoczynnie pdrzez kompilator, jeśli nie ma żadnego konstruktora
+public class Repositor<Tkey, TValue>
+	where Tkey : IEntity			//Tkey dziedziczy po IEntity
+	where TValue : new() 			//TValue ma konstruktor bezparametrowy
+
+
+Delegaty to wskaśniki na funkcję
+
+Generyczne delegaty to predediniowane typy delegat do których możemy w generyczny sposób przekazać typy wejściowe i typ zwracany z danej delegaty
+
+Służą one np. do przekazywania funkcji aninimowych, jako parametrów metod przez co kod, który piszemy będzie bardzej reużywalny.
+
+Typowym wykożystaniem generycznych delegat jest przekazanie funkcji anonimowej, jako wyrażenia lambda, do dowolnej metody LINQ.
+
+Trzy predefiniowalne generyczne delegaty to:
+	Action: delegata przyjmuje do 15 parametrów, nie zwraca żadnej warości
+	Predic: delegata przyjmuje do 15 parametrów, nie zwraca zawsze wartość Boolean
+	Func: delegata przyjmuje do 15 parametrów, zwraca dowolny typ
+
+
+
+Przerobić odcinek o serializacji
+
+
+
+
+Miałem dziś rozmowę ogólnie (w końcu!), mniej więcej napiszę pytania, co pamiętam
+- różnica między const, a readonly, wymieniłem jedną z dwóch, zapomniałem o tym, że do readonly można przypisać obiekty, wspomniałem tylko o tym, że readonly można przypisać przez konstruktor, w przeciwieństwie do const
+- co to jest interfejs
+- SOLID i opisać dwie zasady. Dostałem też pytanie, co o tych zasadach sądzę, to odpowiedziałem mniej więcej, że staram się zrozumieć skutki ich niestosowania i uważam, że jeżeli projekt jest prosty i nie przewidujemy więcej jakiś funkcjonalności rozwijać to nie powinno być problemem, jeśli do pewnych zasad się świadomie nie zastosujemy
+- różnica między is, oraz as ( http://www.pzielinski.com/?p=1114 )
+- czy stosowałem kiedyś stringbuilder, to opisałem, że owszem, jak dowiedziałem się, że string się nie modyfikuje, tylko tworzy za każdym razem nowy obiekt, to zacząłem stosować w miejscu, gdzie ten string trzeba więcej modyfikować. 
+- co to jest klasa abstrakcyjna, to przy okazji opisałem różnicę między nią, a interfejsem. Zarypałem się tylko, bo powiedziałem, że musimy nadpisać metody z klasy abstrakcyjnej, ale naprowadził mnie że jednak nie mam racji i się poprawiłem. Nie byłem też pewien czy muszę w klasie abstrakcyjnej użyć virtual, aby umożliwić nadpisanie, o czym wspomniałem
+- jakich baz danych używałem. Gdy mu wymieniłem (mysql i ms sql), dodałem, że z każdą porobiłem trochę zapytań "z palca", to stwierdził że miał więcej pytań o to, ale od razu mu odpowiedziałem na nie 
+[9:47 PM]
+- czy znam wzorzec CQRS, tu akurat kiedyś coś słyszałem, ale zdecydowanie za słabo, by coś o tym powiedzieć 
+- co to jest konkatenacja
+- co to jest interpolacja. Tu sobie skojarzyłem że jest coś takiego jak interpolacja ciągów, ale ni cholery nie pamiętam, co to było xD to też mu powiedziałem, że nie pamiętam, ale na pewno z tego korzystam xDD
+Z racji, że coś tam kiedyś się frontem bawiłem, to pytał, czy zacząłem jakieś frameworki. Ogólnie delikatnie się pobawiłem reactem, ale to dawno i raczej nic nie pamiętam. 
+
+Generalnie trochę się w pewnych miejscach zamotałem, ale też nie zablokowałem totalnie. Jak czegoś nie wiedziałem, to się przyznałem. Chociażby różnica między is a as, przyznałem że znam ją tylko ze względu na to, że przeglądałem pytania rekrutacyjne, ale sam tego nigdy nie zastosowałem. Zapytał też, dlaczego nie stosowałem automappera w API, to wyjaśniłem, że miałem z nim styczność na kursie, ale uznałem że w projekcie będzie prościej zrobić to ręcznie, że generalnie jeśli coś nie jest skomplikowane i czasochłonne to wolę to zrobić sam, niż dodawać kolejną bibliotekę. Wydawał się zadowolony z tej odpowiedzi 
+
+Edit: 
+- różnica między typami wartościowymi a referencyjnymi (edited)

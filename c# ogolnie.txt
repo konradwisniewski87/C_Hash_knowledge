@@ -1,0 +1,607 @@
+string concatenated = String.Empty;
+string  concatenated = String.Concat(tekst, "Tekst", "i coś");
+string  concatenated = tekst + "Tekst" + "i coś";
+
+string VerbatimRawString = @"jkjlk \ jfklj \"; 
+tylko przed códzysłowiem trzeba umieszcać backslash
+
+interpolacja stringów, interpolowany string może zawierać wartości innych stringów np
+string stringInterpolated = $"{tekst} to me";
+taki string nie może zostać zmieniony po utworzeniu
+        string tekst = "Konrad";
+        string stringInterpolated = $"{tekst} to me";
+        Console.WriteLine (stringInterpolated);
+        tekst = "Monika";
+        Console.WriteLine (stringInterpolated);
+kod wyświetli: 
+Konrad to me
+Konrad to me
+2 razy to samo
+bo nie da się go zmienić nawet zmieniająć poszczególne składowe, ale można zmienić 
+        stringInterpolated = "LoL";
+        Console.WriteLine (stringInterpolated);
+
+
+
+stringbuilder - zmieniając zwykły string tworzymy nowy w pamięci a nie modyfikujemy istniejący, stringbuilder dynamicznie zmienia wartość ale zajmuje chwilowo więcej miejsca bo nadmiarowo alokuje pamięć
+https://learn.microsoft.com/pl-pl/dotnet/api/system.text.stringbuilder?view=net-7.0
+StringBuilder sb = new StringBuilder("ABC", 50);
+sb.append(" is ");
+sb.appendLine(" is ");
+
+string result = sb.ToString()
+
+?: operator - the ternary conditional operator, tak jak w c#
+string GetWeatherDisplay(double tempInCelsius) => tempInCelsius < 20.0 ? "Cold." : "Perfect!";
+int? x = condition ? 12 : null;
+
+komentarze //jednolinijkowy, /* */ wieloliniowy, ale jest też do tworzenia dokumentacji, jako XML, 3 slash
+///
+
+///
+
+#region ProgramClassRegion
+klasa
+#endregion
+dzięki temu dzielimy program na regiony i możemy je szybko zwijać
+
+Rzutowanie
+Jawne rzutowanie implicit, nie jawne explicit
+int zmienna = int.Parse(userinput)
+if(int.Parse(userinput, out dataBirth))
+if sprawdza czy zostało dokonane poprawnie a zmienna jest wstawiana do dataBirth i można ją wykorzystać w int
+rzutowanie jak w c++ jak się zmieści to nie rzutujemy jawnie
+
+Tablice
+string[] cars = { "Volvo", "Renault", "Fiat"}; \\Tablice mają stałą długość
+
+Enum 
+enum Gender : byte
+{
+ Male,
+Female = 2
+}
+Enum.Parse(typeof(Gender), input);
+
+int? to int lub null a to to samo co Nullable<int>
+int? favoriteNumber = 23;
+Console.Writeline("Favorite number: " (favoriteNumber.HasValue() ? favoriteNumber.ToString() : ""));
+
+Namespace - przestrzenie nazw są przestrzeniami dla class żeby lepiej organizować kod.
+Jeśli chcemy użyć jakiejś clasy musimy zaimportować jej przestrzeń nazw
+
+Ile mineło dni od urodzenia
+        Console.WriteLine("Prosze podac date urodzenia dd.mm.yyyy");
+        string dayOfBirthString = Console.ReadLine();
+        DateTime dayOfBirth = DateTime.Parse(dayOfBirthString);
+        
+        TimeSpan timeSpan = DateTime.Now - dayOfBirth;
+        
+        Console.WriteLine("Od urodzenia minelo Ci [dni]: " + timeSpan.TotalDays);
+
+expression bali, zamiast pisać ciało metody piszemy
+void getDate() => date;
+
+Konstruktor delegowany
+public Person(string firstName, string lastName) {...}
+public Person(string firstName, string lastName, int age) : this(firstName, lastName)
+
+private string contactNumber;
+public string ContactNumber
+{
+        get { return contactNumber; }
+        set { contactNumber = value; }
+}
+lub prościej
+public string ContactNumber { get; set; }
+
+static jak w c++ nie ma przekazywanego wskaźnika this, czyli właścicielem metody jest klasa a nie obiekt.
+
+Modyfiktory dostępu jak w c++ plus internal, czyli dostęp w asemply, widać w całym projekcie/programie, ale nie widać w solucji i jescze
+protected internal - dostęp w klasach dziedziczących i w asembly
+
+//--------------------------------------------------------------- Lista ----------------------
+
+Predykat - funkcja zwracająca wartość bool dla danego warunku.
+
+List<int> lista = new List<int>() {4,5,6,7,8};
+dodawanie elementu:
+    list.RemoveAt(2); //usuwa element o indeksie 2
+    list.RemoveAll(isGraderThen5); //isGraderThen5 jest lambdą, są usuwane wszystkie wartości spełniające predykat
+    list.Remove(1); //usuwa pierwsze wystąpienie określonej wartości z listy
+    list.RemoveRange(2,3); usuwa elementy o indeksach od 2 i ile indeksów
+
+
+sortowanie
+    list.sort
+
+Słowink żeby nie wyrzucał exeption należy kożystać z TryGetValu i TryAdd
+
+//---------------------------------------------------------------List
+using System;
+using System.Collections.Generic;
+
+
+
+class HelloWorld {
+    static void DisplayElements(List<int> list) {
+        Console.WriteLine("----------------  List ----------------");
+        foreach(int element in list) {
+            Console.WriteLine($"{element}");
+        }
+        Console.WriteLine();
+    }
+    
+    static bool IsGraterThen5(int x)
+    {
+        return x > 5;
+    }
+    
+    static void Main() {
+        Console.WriteLine("---------------------------------------");
+
+        List<int> intList = new List<int>();
+        intList.Add(6);
+        DisplayElements(intList);
+        
+        intList.Add(7);
+        intList.Add(8);
+        intList.Add(9);
+        intList.Add(3);
+        DisplayElements(intList);
+        intList.RemoveAt(2); // remove by index
+        DisplayElements(intList);
+        
+        List<int> intList2 = new List<int>() {6,3,4,9,45,1,2,0,532,7};
+        DisplayElements(intList2);
+        intList2.RemoveAll(IsGraterThen5);
+        DisplayElements(intList2);
+        
+        List<int> intList3 = new List<int>() {1,2,3,4,5,6,7,8,9,3};
+        intList3.Remove(3); // remove value, only first element
+        DisplayElements(intList3);
+        intList3.RemoveRange(0,4);
+        DisplayElements(intList3);
+  }
+}
+//----------------------------------------------------------------------------------LING
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+public class Person
+{
+    public DateTime dateTime { get; set; }
+    public string name { get; set; }
+    public string surname { get; set; }
+    public Person(DateTime dateTime, string name, string surname){
+        this.dateTime = dateTime;
+        this.name = name;
+        this.surname = surname;
+    }
+    
+    public DateTime GetDateOfBirth()
+    {
+        return dateTime;
+    }
+}
+
+class HelloWorld {
+    static List<Person> GetEmployees() {
+        List<Person> employees = new List<Person>(){
+            new Person(new DateTime(1990,2,2), "Bill", "Wick"),
+            new Person(new DateTime(1995,6,3), "John", "Wick"),
+            new Person(new DateTime(1996,4,3), "Bob", "Wick"),
+            new Person(new DateTime(2001,2,2), "Bill", "Wick"),
+            new Person(new DateTime(2000,2,2), "Bill", "Wick"),
+            new Person(new DateTime(2005,2,2), "Bill", "Wick"),
+            new Person(new DateTime(2003,2,2), "Bill", "Wick"),
+        };
+        return employees;
+    }
+    
+    static bool EmployeeIsYoung(Person person) {
+        return person.GetDateOfBirth() > new DateTime(2000,1,1);
+    }
+    static bool EmployeeIsBob(Person person) {
+        return person.name == "Bob";
+    }
+    
+  static void Main() {
+    Console.WriteLine("-------------------------------------------");
+    List<Person> employees = GetEmployees();
+    
+    //Without LING
+    // List<Person> youngEmployees = new List<Person>();
+    // foreach(var employee in employees) {
+    //     if(employee.GetDateOfBirth() > new DateTime(2000,1,1)) {
+    //         youngEmployees.Add(employee);
+    //     }
+    // }
+    
+    //With LING
+    // List<Person> youngEmployees = employees.Where(EmployeeIsYoung).ToList();
+    //Lanbda Expression
+    List<Person> youngEmployees = employees.Where(
+        (Person person) => person.GetDateOfBirth() > new DateTime(2000,1,1)
+        ).ToList();
+     //or tiny
+        List<Person> youngEmployees2 = employees.Where(
+        e => e.GetDateOfBirth() > new DateTime(2000,1,1)
+        ).ToList();
+    
+    Console.WriteLine($"Young employees count: {youngEmployees.Count}");
+    
+    
+    //Without LING
+    // Person bob = null;
+    // foreach(var employee in employees) {
+    //     if(employee.name == "Bob") {
+    //         bob = employee;
+    //         break;
+    //     }
+    // }
+    
+    //With LING
+    // Person bob = employees.FirstOrDefault(EmployeeIsBob);
+    //Lanbda Expression
+    Person bob = employees.FirstOrDefault(
+        e => e.name == "Bob"
+        );
+
+    
+    
+    
+    if(bob != null) {
+        Console.WriteLine($"Hi {bob.name}");
+    }
+    else{
+        Console.WriteLine($"Bob not found");
+    }
+    
+    // List<string> employeesName = employees.Select(GetEmployeeFirstName).ToList(); 
+    // DateTime yungestEmployeeDateOfBirth = employees.Max(GetEmployeeDateOfBirth);
+    // DateTime oldestEmployeeDAteOfBirth = employees.Min(GetEmployeeDateOfBirth);
+  }
+}
+//----------------------------------------------------------------------------------Dictionary
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+class Currency
+{
+    public string Name { get; set; }
+    public string FullName { get; set; }
+    public double Rate { get; set; }
+    public Currency(string name, string fullName, double rate) {
+        Name = name;
+        FullName = fullName;
+        Rate = rate;
+    }
+}
+
+class HelloWorld {
+    // static List<Currency> GetCurrencies()
+    // {
+    //     return new List<Currency>
+    //     {
+    //         new Currency("usd", "United States, Dolar", 1),
+    //         new Currency("eur", "Euro", 0.83932),
+    //         new Currency("gbp", "British Pound", 0.74771),
+    //         new Currency("cad", "Canadian Dollar", 1.30723),
+    //         new Currency("inr", "Indian Rupee", 73.04),
+    //         new Currency("mxn", "Mexican Peso", 21.7543)
+    //     };
+    // }
+    
+    static Dictionary<string, Currency> GetCurrencies()
+    {
+        return new Dictionary<string, Currency>
+        {
+            { "usd", new Currency("usd", "United States, Dolar", 1)},
+            { "eur", new Currency("eur", "Euro", 0.83932)},
+            { "gbp", new Currency("gbp", "British Pound", 0.74771)},
+            { "cad", new Currency("cad", "Canadian Dollar", 1.30723)},
+            { "inr", new Currency("inr", "Indian Rupee", 73.04)},
+            { "mxn", new Currency("mxn", "Mexican Peso", 21.7543)}
+        };
+    }
+    
+  static void Main() {
+    Console.WriteLine("-------------------------------------------");
+    // List<Currency> currencies = GetCurrencies();
+    Dictionary<string, Currency> currencies = GetCurrencies();
+    Console.WriteLine("Check your rate for: ");
+    string userInput = Console.ReadLine();
+    
+    // Currency selectedCurrency = currencies.FirstOrDefault(c=>c.Name == userInput);
+    //Currency selectedCurrency = currencies[userInput]; //return exeption when not found in bottom if
+    
+    
+    //if(selectedCurrency != null)
+    Currency selectedCurrency = null;
+    if(Currency.TryGetValue(userInput, out selectedCurrency))//fix exeption for dictionary
+    {
+        Console.WriteLine($"Rate for USD to {selectedCurrency.FullName} is {selectedCurrency.Rate}");
+    }
+    else
+    {
+        Console.WriteLine("Currency not found");   
+    }
+    // currencies.Remove("mxn");//remove value form dictionary
+    // currencies.Add("usd", new Currency("usd", "United States, Dolar", 1));
+    // //key must be unique, better idea use TryAdd
+    // currencies.TryAdd("usd", new Currency("usd", "United States, Dolar", 1));
+  }
+}
+//List must check all element from list, dictionary push returned valiu immediatly
+
+using System;
+
+namespace Coding.Exercise
+{
+    using System.Collections.Generic;
+    using System.Linq;
+    
+    public class GradeManager
+    {
+    
+            Dictionary<string, List<int>> grades = new Dictionary<string, List<int>>();
+    public void AddGrade(string studentName, int grade)
+    {
+        // TODO: Uzupełnij implementację metody AddGrade, aby dodawała nową ocenę do listy ocen ucznia.
+        List<int> studentGrades = null;
+        if(grades.TryGetValue(studentName, out studentGrades))
+        {
+            studentGrades.Add(grade);
+        } else {
+            grades.Add(studentName, new List<int> {grade});
+        }
+    }
+
+    public void RemoveGrade(string studentName, int grade)
+    {
+        // TODO: Uzupełnij implementację metody RemoveGrade, aby usuwała ocenę z listy ocen ucznia, jeśli istnieje.
+        List<int> studentGrades = null;
+        if(grades.TryGetValue(studentName, out studentGrades))
+        {
+            studentGrades.Remove(grade);
+        } 
+    }
+
+    public double CalculateAverageGrade(string studentName)
+    {
+        // TODO: Uzupełnij implementację metody CalculateAverageGrade, aby obliczała średnią ocen ucznia, jeśli istnieją oceny.
+                    if (grades.ContainsKey(studentName) && grades[studentName].Count > 0)
+            {
+                return grades[studentName].Average();
+            }
+            return 0.0;
+    }
+    }
+}
+
+using System;
+ 
+namespace Coding.Exercise
+{
+    using System.Collections.Generic;
+    using System.Linq;
+    
+    public class GradeManager
+    {
+        private Dictionary<string, List<int>> grades = new Dictionary<string, List<int>>();
+    
+        public void AddGrade(string studentName, int grade)
+        {
+            if (!grades.ContainsKey(studentName))
+            {
+                grades[studentName] = new List<int>();
+            }
+            grades[studentName].Add(grade);
+        }
+    
+        public void RemoveGrade(string studentName, int grade)
+        {
+            if (grades.ContainsKey(studentName))
+            {
+                grades[studentName].Remove(grade);
+            }
+        }
+    
+        public double CalculateAverageGrade(string studentName)
+        {
+            if (grades.ContainsKey(studentName) && grades[studentName].Count > 0)
+            {
+                return grades[studentName].Average();
+            }
+            return 0.0;
+        }
+    }
+ 
+}
+
+//--------------------------------------------------------------- Yield ----------------------
+yield return i; Bardzo przydatne zwracanie jednej warości z szeregu gdy mamy doczynienia z dóżymi plikami, bazami danych, albo gdy chcemy literować poczęści taclicy żeby nie pobierać jej załej na raz
+yield break;
+przetywa yielda
+
+public static IEnumerable<int> GetYieldedDate()
+{
+        for(int i = 0; i < 9, i++)
+        {
+                yield return i;
+        }
+}
+
+public static IEnumerable<int> GetYieldedDate()
+{
+        for(int i = 0; i < 9, i++)
+        {
+                yield return i;
+                if(i % 3 ==0){
+                        break;//we can break enumerator
+                }
+        }
+}
+
+jeżeli nawet przypisujemy funkcję zwracającą yield do tablicy i wykożystujemy w jakiejś pętli to wartości zostaną zwrócone dopiero jak będę one wykorzystywane
+//--------------------------------------------------------------- const and readonly ----------------------
+const ustawiane jest podczas kompilacji, readonly przy tworzeniu obiektu dla tego readonly można ustawić w konstruktorze
+typy wartoścowe mogą być const i readonly
+typy referencyjne mogą być tylko readonly, jedyny typ referencyjny który może być const to string
+typy wartościowe w typie referencyjnym mogą być jak typy wartościowe
+
+nie można towrzyć obiektu const typu referecyjnego z wartością readonly ostawianą w konstruktorze, bo obiekt jest tworzony podczas kompilacji i wtedy watrości muszą być znane
+
+https://www.hackerrank.com/
+https://www.codewars.com/users/konradwisniewski87
+
+//--------------------------------------------------------------- Pliki ----------------------
+ToDo
+
+//--------------------------------------------------------------- String ----------------------
+using System;
+class HelloWorld {
+  static void Main() {
+    Console.WriteLine("Hello World");
+    string napis = "This is some value";
+    Console.WriteLine(napis.Substring(5));// return copy "is some value"
+    string startString = napis.Substring(0,5);
+    string endString = napis.Substring(napis.Length -5);
+    Console.WriteLine($"{startString}..., ...{endString}");
+    
+    string template = "Hello {name}, how are you?";
+    Console.WriteLine(template.Replace("{name}", "Konrad"));
+    
+    Console.WriteLine(napis.Remove(8,5));//This is value
+    
+    Console.WriteLine(napis.Insert(8, "inserted "));//This is inserted some vale
+    //if value is grader then string length error exception
+    
+    string input = "    Text to     trim   ";//remove space and whitechar from start and and strnig
+    //in middle stay not touch 
+    Console.WriteLine(input.Trim());
+    
+    Console.WriteLine(napis.ToUpper());
+    Console.WriteLine(napis.ToLower());
+    Console.WriteLine(napis.ToLower());
+    
+    string [] inputParts = napis.Split(" ");
+    foreach(string part in inputParts)
+    {
+        Console.WriteLine(part);
+    }
+    
+    string fileName = "README.md";
+    bool isMDfile = fileName.EndsWith(".md");
+    Console.WriteLine(isMDfile ? "Yes" : "No");
+    
+    bool isREADMEfile = fileName.StartsWith("README");
+    Console.WriteLine(isREADMEfile ? "Yes" : "No");
+        
+    bool includeME = fileName.Contains("ME");//fileName.Contains("ME",StringComparison.CurrentCultureIgnoreCase);
+    Console.WriteLine(includeME ? "Yes" : "No");
+    }
+}
+
+public string RemoveWhitespace(string input)
+{
+    return Regex.Replace(input, @"\s+", "");
+}
+
+//--------------------------------------------------------------- DateTime ----------------------
+using System;
+using System.Diagnostics;
+
+class HelloWorld {
+  static void Main() {
+    Console.WriteLine("------------------------------------------------");
+    DateTime now = DateTime.Now;
+    DateTime birthday = new DateTime(1987,5,12);
+    
+    TimeSpan result = now - birthday;
+    Console.WriteLine(result.TotalDays);
+    
+    DateTime expiresAt = now.AddDays(365);
+    Console.WriteLine(expiresAt);
+    expiresAt = expiresAt.Add(new TimeSpan(7,1,0,0));
+    Console.WriteLine(expiresAt);
+    
+    DateTime today = DateTime.Now;
+    DateTime today2 = DateTime.Now.Add(new TimeSpan(0,0,0,1));
+    Console.WriteLine($"Variable today: {today}, Variable today2(today plus 1 hour): {today2}");
+    
+    bool theSameDay = today == today2;//false comper no only day but time too
+    Console.WriteLine($"theSameDay: {theSameDay}");
+    
+    theSameDay = today.Date == today2.Date;//true
+    Console.WriteLine($"theSameDay: {theSameDay}");
+    
+    
+    //DateTime formatting
+    Console.WriteLine(now.ToShortDateString());//11/16/2023
+    Console.WriteLine(now.ToLongDateString());//Thursday, November 16, 2023
+    Console.WriteLine(now.ToString("g"));
+    Console.WriteLine(now.ToString("G"));
+    //https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+    Console.WriteLine(now.ToString("dd-MM-yyyy"));//16-11-2023
+      
+    //DateTime measurement
+    DateTime start = DateTime.Now;
+    string text = Console.ReadLine();
+    DateTime stop = DateTime.Now;
+    TimeSpan timeElapsed = stop - start;
+    Console.WriteLine(timeElapsed);//00:00:02.534675
+    
+    Stopwatch stopwatch = Stopwatch.StartNew();//Stopwatch stopWatch = new Stopwatch(); stopWatch.Start();
+    string text2 = Console.ReadLine();
+    stopwatch.Stop();
+    Console.WriteLine(stopwatch.Elapsed.TotalSeconds);//2.64242
+    
+    
+    int daysInFeb2024 = DateTime.DaysInMonth(2024,2);
+    bool is2024LeapYear = DateTime.IsLeapYear(2024);
+    Console.WriteLine($"daysInFeb2024 {daysInFeb2024}");
+    Console.WriteLine($"is2024LeapYear {is2024LeapYear}");
+    
+  }
+}
+//---------------------------------------- extension methods ----------------------
+//It use for existing class for example in framework or dll, when we can't add
+//method
+using System;
+using System.Diagnostics;
+
+
+public static class Utils
+{
+    public static bool IsBetween(this DateTime date, DateTime from, DateTime to)// we need only add this before class name to extend
+    {
+        return date > from && date < to;
+    }
+    
+    public static int Squared(this int value)
+    {
+        return value * value;
+    }
+}
+
+
+class HelloWorld {
+  static void Main() {
+    Console.WriteLine("------------------------------------------------");
+    DateTime now = DateTime.Now;
+    DateTime before = now.Subtract(new TimeSpan(7,0,0,0));
+    DateTime after = now.AddDays(7);
+    
+    bool isDateBetween2 = now.IsBetween(before, after);
+    
+    int value = 2;
+    value = value.Squared();
+    Console.WriteLine(value);
+  }
+}
