@@ -1,0 +1,23 @@
+Azure
+
+Storage account:
+Blob - Binary large object storage, przechowujemy dowolne pliki oraz dyski twarde, przechowuje ogromne ilości danych nieustrukturyzowane, dane tekstowe i binarne, zazwyczaj wykożystywany jak robimy stronę www
+Queue - kolejka gdzie wysyłamy wiadomości i od strony klienta pobieramy je FIFO
+Table - przechowywanie danych w postaci tabeli bez konkretnie zdefiniowywanego schematu
+File - storage przechowujemy dowolne pliki oraz dyski twarde, File-Share udostępniane za pomosą SMB oraz NFS
+
+Blob storage Access tire:
+Hot - Tania wymiana danych, ale drogie trzymanie na nich danych, barszo szybkie
+Cold - Głównie do prdzechowywania backup, wolne ale tani 1GB
+
+oprogramiwanie na PC storage account exproler, łączymu się z nim generując w chmurze Access key dla danego storage
+
+
+
+
+
+
+
+
+
+Możemy ustalić polityki np przechowywania danych tylko we wschodniej europie
