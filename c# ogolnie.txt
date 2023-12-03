@@ -605,3 +605,132 @@ class HelloWorld {
     Console.WriteLine(value);
   }
 }
+
+//---------------------------------------- Generic type ----------------------
+// public class Repository<TKey, TValue>
+// private Dictionary<TKey, TValue>
+
+public class Repository<T>
+{
+        private List<T> date = new List<T>();
+        public void AddElement(T element)
+        {
+                if(element != null)
+                {
+                        date.Add(element);
+                }
+        }
+        public T GetElement(int index)
+        {
+                if(index < data.Count)
+                {
+                        return date[index];
+                }
+                else
+                {
+                        return default;
+                }
+        }
+}
+
+public class Repository<T> where T : class //generic type must by reference type
+public class Repository<T> where T : IEntity //must inheritance from IEntity
+public class Repository<T> where T : IEntity, IEnumerable //must inheritance from IEntity and IEnumerable
+public class Repository<TKey, TValue> 
+        where TKey : class
+        where TValue : new() //constructor without parameters  
+
+
+//---------------------------------------- Generic delegate ----------------------
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+
+class HelloWorld {
+    
+    public delegate void Display(string value);
+    public delegate bool GenericPredicate<T>(T value);
+    
+    static void Main(string [] args) {
+         
+        
+        Console.WriteLine("-------------------------------------------");
+        
+        //Display display = WriteWithComma;
+        Display display = (string value) => Console.Write(value + ", ");
+        
+        display("Test");
+        
+        var number = new int[] {10,20,50};
+        
+        //DispalayNumbers(number, display);
+        
+        Console.WriteLine();
+        Console.WriteLine("-------------------------------------------");
+        var count = Count(number, (int value) => value > 35);
+        Console.WriteLine(count);
+        
+        var strings = new string[] {"Generic", "Delegate", "test"};
+        count = Count(strings, value => value.Length > 4);
+        Console.WriteLine(count);
+    }
+    //static int Count<T>(IEnumerable<T> elements, GenericPredicate<T> predicate)
+    static int Count<T>(IEnumerable<T> elements, Predicate<T> predicate)//i use C# predicate
+    {
+        int count = 0;
+        foreach(T element in elements)
+        {
+            if(predicate(element))
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+  
+    //static void DispalayNumbers(IEnumerable<int> numbers, Display display)
+    static void DispalayNumbers<T>(IEnumerable<T> elements, Display display)
+    {
+        foreach(T element in elements)
+        {
+            display(element.ToString());
+        }
+    }
+    static void WriteWithComma(string value)
+    {
+        Console.Write(value + ", ");
+    }
+    
+    // //include delegate in C#
+    // public delegate void Action<in T>(T obj);//
+    // public delegate void Action<in T1, in T2>(T obj);
+    // public delegate void Action<in T1, in T2, in T3>(T obj);
+    // public delegate void Action<in T1, in T2, in T3, in T4>(T obj);
+    // public delegate void Action<in T1, in T2, in T3, in T4, in T5>(T obj);//pass between 0 to 15 parameters to function, no return nothing
+    // //...
+    
+    // public delegate TResult Func<out TResult>();//pass between 0 to 15 parameters, return TResult, type the last passed value
+    // public delegate TResult Func<in T1, out TResult>();
+    // //...
+    
+    // public delegate bool Predicate<in T>(T obj);//pass one value, return bool 
+}
+
+//---------------------------------------- Async Await ----------------------
+
+
+
+
+//---------------------------------------- Http request ----------------------
+https://jsonplaceholder.typicode.com/
+
+
+
+
+
+
+//---------------------------------------- Reminder  ----------------------
+https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/using-objects
+IDisposable has a method Dispose() clear resorses like DB and files, other resorses can clear garbage collection but no this
+
