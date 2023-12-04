@@ -734,3 +734,26 @@ https://jsonplaceholder.typicode.com/
 https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/using-objects
 IDisposable has a method Dispose() clear resorses like DB and files, other resorses can clear garbage collection but no this
 
+//---------------------------------------- Regex  ----------------------
+using System;
+namespace HelloWorld
+{
+  class Program
+  {
+    static void Main()
+    {
+      string[] languages = {"C#", "Python", "Java"};
+      foreach(string s in languages)
+      {
+        if(System.Text.RegularExpressions.Regex.IsMatch(s,"^Pyth"))
+        {
+          Console.WriteLine("Match found");
+        }
+        else
+        {
+          Console.WriteLine("No match");
+        }
+      }
+    }
+  }
+}
