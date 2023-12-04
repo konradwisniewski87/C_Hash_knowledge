@@ -202,6 +202,60 @@ Przerobić odcinek o serializacji
 
 
 
+Czy w C# można utworzyć metodę, która może przyjmować zmienną liczbę parametrów?
+
+Tak, aby to zrobić, należy użyć słowa kluczowego params.
+public class Student
+{
+    private List< int>  _marks = new List< int> ();
+
+    public void AddMarks(params int[] number)
+    {
+        foreach (var item in number)
+        {
+            _marks.Add(item);
+        }
+    }
+}
+
+var student = new Student();
+student.AddMarks(1, 2, 3);
+student.AddMarks(1, 2, 3, 4, 5, 5, 5, 5, 1);
+
+
+
+
+Czym są indeksery?
+
+Indeksery, są to metody, dzięki którym możemy mieć dostęp do obiektu, tak jakby był on tablicą, czy kolekcją elementów.
+
+public class MyList
+{
+    private List< int>  _list = new List< int> ();
+
+    public int this[int index]
+    {
+        get
+        {
+            return _list[index];
+        }
+        set
+        {
+            _list[index] = value;
+        }
+    }
+}
+
+var myList = new MyList();
+myList[0] = 1;
+
+
+
+
+
+
+
+
 Miałem dziś rozmowę ogólnie (w końcu!), mniej więcej napiszę pytania, co pamiętam
 - różnica między const, a readonly, wymieniłem jedną z dwóch, zapomniałem o tym, że do readonly można przypisać obiekty, wspomniałem tylko o tym, że readonly można przypisać przez konstruktor, w przeciwieństwie do const
 - co to jest interfejs
